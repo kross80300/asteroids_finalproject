@@ -2,15 +2,15 @@
 <XnaContent xmlns:Graphics="Microsoft.Xna.Framework.Content.Pipeline.Graphics">
     <Asset Type="Graphics:FontDescription">
 
-        <FontName>Arial</FontName>
+        <FontName>PressStart2P-Regular</FontName>
 
-        <Size>24</Size>
+        <Size>20</Size>
 
         <Spacing>0</Spacing>
 
         <UseKerning>true</UseKerning>
 
-        <Style>Bold</Style>
+        <Style>Regular</Style>
 
         <CharacterRegions>
             <CharacterRegion>

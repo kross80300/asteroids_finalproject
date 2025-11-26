@@ -62,7 +62,7 @@ public class Spaceship
     public void Draw(SpriteBatch spriteBatch)
     {
         Vector2 origin = new Vector2(frame / 2f, frame / 2f);
-        spriteBatch.Draw(spriteSheet, position + origin, img, Color.White, -MathF.PI / 2, origin, new Vector2(1, 1), SpriteEffects.None, 0f);
+        spriteBatch.Draw(spriteSheet, position + origin, img, Color.White, -MathF.PI / 2, origin, new Vector2(1.3f, 1.3f), SpriteEffects.None, 0f);
     }
 
     public int GetLives()

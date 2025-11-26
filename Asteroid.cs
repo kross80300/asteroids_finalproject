@@ -11,7 +11,7 @@ public class Asteroid
     int hitPoints = 3;
     float rotationAngle;
     float rotationSpeed;
-    float scale = 0.2f;
+    float scale = 0.3f;
     
     public Asteroid(Vector2 pos, Vector2 vel, Texture2D texture, float rotSpeed)
     {
