@@ -8,11 +8,13 @@ namespace asteroids_finalproject
     {
         private SpriteFont _font;
         private GraphicsDevice _graphicsDevice;
+        private Texture2D _heartTexture;
 
-        public GameGUI(SpriteFont font, GraphicsDevice graphicsDevice)
+        public GameGUI(SpriteFont font, GraphicsDevice graphicsDevice, Texture2D heartTexture)
         {
             _font = font;
             _graphicsDevice = graphicsDevice;
+            _heartTexture = heartTexture;
         }
 
         public void DrawHUD(SpriteBatch spriteBatch, int currentLevel, int score, int lives)
@@ -22,26 +24,41 @@ namespace asteroids_finalproject
 
             string levelText = $"Level: {currentLevel}";
             string scoreText = $"Score: {score}";
-            string livesText = $"Lives: {lives}";
             
             Vector2 levelPos = new Vector2(20, 20);
             Vector2 scorePos = new Vector2(20, 55);
-            Vector2 livesPos = new Vector2(20, 90);
 
             Texture2D pixel = new Texture2D(_graphicsDevice, 1, 1);
             pixel.SetData(new[] { Color.White });
             
             Vector2 levelSize = _font.MeasureString(levelText);
             Vector2 scoreSize = _font.MeasureString(scoreText);
-            Vector2 livesSize = _font.MeasureString(livesText);
             
-            float maxWidth = Math.Max(Math.Max(levelSize.X, scoreSize.X), livesSize.X);
+            float maxWidth = Math.Max(levelSize.X, scoreSize.X);
             
-            spriteBatch.Draw(pixel, new Rectangle(15, 15, (int)maxWidth + 10, 105), Color.Black * 0.5f);
+            spriteBatch.Draw(pixel, new Rectangle(15, 15, (int)maxWidth + 10, 70), Color.Black * 0.5f);
             
             spriteBatch.DrawString(_font, levelText, levelPos, Color.White);
             spriteBatch.DrawString(_font, scoreText, scorePos, Color.White);
-            spriteBatch.DrawString(_font, livesText, livesPos, Color.White);
+
+            float heartSize = 40f;
+            float heartSpacing = 50f;
+            float totalHeartsWidth = (3 * heartSpacing) - (heartSpacing - heartSize);
+            Vector2 heartsStartPos = new Vector2(screenWidth - totalHeartsWidth - 20, 20);
+
+            spriteBatch.Draw(pixel, new Rectangle((int)(screenWidth - totalHeartsWidth - 25), 15, (int)totalHeartsWidth + 10, (int)heartSize + 20), Color.Black * 0.5f);
+            
+            for (int i = 0; i < 3; i++)
+            {
+                Color heartColor = i < lives ? Color.Red : Color.Gray;
+                Vector2 heartPos = new Vector2(heartsStartPos.X + (i * heartSpacing), heartsStartPos.Y);
+                
+                spriteBatch.Draw(
+                    _heartTexture,
+                    new Rectangle((int)heartPos.X, (int)heartPos.Y, (int)heartSize, (int)heartSize),
+                    heartColor
+                );
+            }
         }
 
         public void DrawGameOverScreen(SpriteBatch spriteBatch, int finalLevel, int finalScore)

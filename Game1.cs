@@ -61,7 +61,10 @@ public class Game1 : Game
         _asteroidTexture = Content.Load<Texture2D>("textures/asteroid");
         _spaceshipTexture = Content.Load<Texture2D>("textures/spaceshipTexture");
         _font = Content.Load<SpriteFont>("font/GameFont");
-        _gui = new GameGUI(_font, GraphicsDevice);
+
+        Texture2D heartTexture = Content.Load<Texture2D>("textures/pixelheart");
+
+        _gui = new GameGUI(_font, GraphicsDevice, heartTexture);
 
         _projectileTexture = new Texture2D(GraphicsDevice, 1, 1);
         _projectileTexture.SetData(new[] { Color.Yellow });
