@@ -84,5 +84,11 @@ public class Asteroid
             return true;
         }
         return false;
-    } 
+    }
+
+    public bool ReachedBottom(int screenHeight)
+    {
+        float scaledHalfHeight = (asteroidTexture.Height * scale) / 2f;
+        return position.Y - scaledHalfHeight > screenHeight;
+    }
 }

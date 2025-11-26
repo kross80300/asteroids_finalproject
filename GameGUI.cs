@@ -22,7 +22,7 @@ namespace asteroids_finalproject
             int screenWidth = _graphicsDevice.Viewport.Width;
             int screenHeight = _graphicsDevice.Viewport.Height;
 
-            string levelText = $"Level: {currentLevel}";
+            string levelText = $"Wave: {currentLevel}";
             string scoreText = $"Score: {score}";
             
             Vector2 levelPos = new Vector2(20, 20);
@@ -82,7 +82,7 @@ namespace asteroids_finalproject
             );
             spriteBatch.DrawString(_font, gameOverText, gameOverPos, Color.Red);
 
-            string levelText = $"Level Reached: {finalLevel}";
+            string levelText = $"Wave Reached: {finalLevel}";
             Vector2 levelSize = _font.MeasureString(levelText);
             Vector2 levelPos = new Vector2(
                 (screenWidth - levelSize.X) / 2f,

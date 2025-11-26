@@ -122,8 +122,13 @@ public class Game1 : Game
         {
             _asteroids[i].Update(gameTime);
 
-            if (_asteroids[i].IsOffScreen(_graphics.PreferredBackBufferWidth,
-                    _graphics.PreferredBackBufferHeight))
+            if (_asteroids[i].ReachedBottom(_graphics.PreferredBackBufferHeight))
+            {
+                spaceship.LoseLife();
+                _asteroids.RemoveAt(i);
+            }
+            else if (_asteroids[i].IsOffScreen(_graphics.PreferredBackBufferWidth,
+                         _graphics.PreferredBackBufferHeight))
             {
                 _asteroids.RemoveAt(i);
             }
