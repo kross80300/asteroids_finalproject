@@ -5,11 +5,14 @@ namespace asteroids_finalproject
 {
     public class HighScores
     {
-        private const string HIGH_SCORE_FILE = "highscore.txt";
+        private readonly string HIGH_SCORE_FILE;
         private int _highScore;
 
         public HighScores()
         {
+            string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+            HIGH_SCORE_FILE = Path.Combine(projectDirectory, "Content", "highscore.txt");
+            
             LoadHighScore();
         }
 
@@ -43,14 +46,8 @@ namespace asteroids_finalproject
 
         public void SaveHighScore()
         {
-            try
-            {
-                File.WriteAllText(HIGH_SCORE_FILE, _highScore.ToString());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error saving high score: {ex.Message}");
-            }
+            File.WriteAllText(HIGH_SCORE_FILE, _highScore.ToString());
+
         }
 
         public void CheckAndUpdateHighScore(int currentScore)
