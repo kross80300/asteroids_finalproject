@@ -17,27 +17,31 @@ namespace asteroids_finalproject
             _heartTexture = heartTexture;
         }
 
-        public void DrawHUD(SpriteBatch spriteBatch, int currentLevel, int score, int lives)
+        public void DrawHUD(SpriteBatch spriteBatch, int currentLevel, int score, int lives, int highScore)
         {
             int screenWidth = _graphicsDevice.Viewport.Width;
             int screenHeight = _graphicsDevice.Viewport.Height;
 
+            string highScoreText = $"High Score: {highScore}";
             string levelText = $"Wave: {currentLevel}";
             string scoreText = $"Score: {score}";
             
-            Vector2 levelPos = new Vector2(20, 20);
-            Vector2 scorePos = new Vector2(20, 55);
+            Vector2 highScorePos = new Vector2(20, 20);
+            Vector2 levelPos = new Vector2(20, 55);
+            Vector2 scorePos = new Vector2(20, 90);
 
             Texture2D pixel = new Texture2D(_graphicsDevice, 1, 1);
             pixel.SetData(new[] { Color.White });
             
+            Vector2 highScoreSize = _font.MeasureString(highScoreText);
             Vector2 levelSize = _font.MeasureString(levelText);
             Vector2 scoreSize = _font.MeasureString(scoreText);
             
-            float maxWidth = Math.Max(levelSize.X, scoreSize.X);
+            float maxWidth = Math.Max(Math.Max(highScoreSize.X, levelSize.X), scoreSize.X);
             
-            spriteBatch.Draw(pixel, new Rectangle(15, 15, (int)maxWidth + 10, 70), Color.Black * 0.5f);
+            spriteBatch.Draw(pixel, new Rectangle(15, 15, (int)maxWidth + 10, 105), Color.Black * 0.5f);
             
+            spriteBatch.DrawString(_font, highScoreText, highScorePos, Color.Gold);
             spriteBatch.DrawString(_font, levelText, levelPos, Color.White);
             spriteBatch.DrawString(_font, scoreText, scorePos, Color.White);
 
@@ -61,7 +65,7 @@ namespace asteroids_finalproject
             }
         }
 
-        public void DrawGameOverScreen(SpriteBatch spriteBatch, int finalLevel, int finalScore)
+        public void DrawGameOverScreen(SpriteBatch spriteBatch, int finalLevel, int finalScore, int highScore)
         {
             int screenWidth = _graphicsDevice.Viewport.Width;
             int screenHeight = _graphicsDevice.Viewport.Height;
@@ -97,6 +101,26 @@ namespace asteroids_finalproject
                 screenHeight / 2f + 20
             );
             spriteBatch.DrawString(_font, scoreText, scorePos, Color.White);
+
+            string highScoreText = $"High Score: {highScore}";
+            Vector2 highScoreSize = _font.MeasureString(highScoreText);
+            Vector2 highScorePos = new Vector2(
+                (screenWidth - highScoreSize.X) / 2f,
+                screenHeight / 2f + 60
+            );
+            Color highScoreColor = finalScore >= highScore ? Color.Yellow : Color.Gold;
+            spriteBatch.DrawString(_font, highScoreText, highScorePos, highScoreColor);
+
+            if (finalScore >= highScore)
+            {
+                string newHighScoreText = "NEW HIGH SCORE!";
+                Vector2 newHighScoreSize = _font.MeasureString(newHighScoreText);
+                Vector2 newHighScorePos = new Vector2(
+                    (screenWidth - newHighScoreSize.X) / 2f,
+                    screenHeight / 2f + 100
+                );
+                spriteBatch.DrawString(_font, newHighScoreText, newHighScorePos, Color.Yellow);
+            }
         }
     }
 }

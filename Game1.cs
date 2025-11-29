@@ -33,6 +33,8 @@ public class Game1 : Game
     private GameGUI _gui;
     private bool _gameOver = false;
     private KeyboardState _previousKeyboardState;
+    
+    private HighScores _highScoreManager;
 
     public Game1()
     {
@@ -51,6 +53,7 @@ public class Game1 : Game
         _random = new Random();
         _asteroidSpawnTimer = 0f;
         _levelTimer = 0f;
+        _highScoreManager = new HighScores();
 
         base.Initialize();
     }
@@ -80,11 +83,7 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             k.IsKeyDown(Keys.Escape))
             Exit();
-
-        if (_gameOver)
-        {
-            return;
-        }
+        
 
         spaceship.Update(gameTime, k, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
 
@@ -98,6 +97,7 @@ public class Game1 : Game
         if (spaceship.GetLives() <= 0)
         {
             _gameOver = true;
+            _highScoreManager.CheckAndUpdateHighScore(_score);
             return;
         }
 
@@ -180,6 +180,24 @@ public class Game1 : Game
         base.Update(gameTime);
     }
 
+    private void RestartGame()
+    {
+        _gameOver = false;
+        _score = 0;
+        _currentLevel = 1;
+        _levelTimer = 0f;
+        _asteroidSpawnInterval = 2.5f;
+        _asteroidSpawnTimer = 0f;
+        
+        _asteroids.Clear();
+        _projectiles.Clear();
+        _asteroidsToRemove.Clear();
+        _projectilesToRemove.Clear();
+        
+        spaceship = new Spaceship(_spaceshipTexture,
+            new Vector2(_spaceshipTexture.Width / 2f, _spaceshipTexture.Height / 2f), 5f);
+    }
+
     private void SpawnAsteroid()
     {
         int screenWidth = _graphics.PreferredBackBufferWidth;
@@ -216,11 +234,11 @@ public class Game1 : Game
                 projectile.Draw(_spriteBatch);
             }
 
-            _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives());
+            _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
         }
         else
         {
-            _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score);
+            _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score, _highScoreManager.GetHighScore());
         }
 
         _spriteBatch.End();
