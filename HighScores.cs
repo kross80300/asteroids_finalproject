@@ -18,28 +18,20 @@ namespace asteroids_finalproject
 
         public void LoadHighScore()
         {
-            try
+            if (File.Exists(HIGH_SCORE_FILE))
             {
-                if (File.Exists(HIGH_SCORE_FILE))
+                string content = File.ReadAllText(HIGH_SCORE_FILE);
+                if (int.TryParse(content, out int score))
                 {
-                    string content = File.ReadAllText(HIGH_SCORE_FILE);
-                    if (int.TryParse(content, out int score))
-                    {
-                        _highScore = score;
-                    }
-                    else
-                    {
-                        _highScore = 0;
-                    }
+                    _highScore = score;
                 }
                 else
                 {
                     _highScore = 0;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"Error loading high score: {ex.Message}");
                 _highScore = 0;
             }
         }
