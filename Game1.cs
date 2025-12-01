@@ -35,6 +35,13 @@ public class Game1 : Game
     private KeyboardState _previousKeyboardState;
     
     private HighScores _highScoreManager;
+    private Texture2D _powerupTexture;
+    private List<Powerup> _powerups = new List<Powerup>();
+    private List<Powerup> _powerupsToRemove = new List<Powerup>();
+    private bool startTimer = false;
+    private float ptimer = 0f;
+    private Texture2D pixel;
+    private bool isPaused = false;
 
     public Game1()
     {
@@ -74,16 +81,39 @@ public class Game1 : Game
         _projectileTexture.SetData(new[] { Color.Yellow });
 
         spaceship = new Spaceship(_spaceshipTexture,
-            new Vector2(_spaceshipTexture.Width / 2f, _spaceshipTexture.Height / 2f), 5f);
+            new Vector2(_graphics.PreferredBackBufferWidth / 2f - 50, _graphics.PreferredBackBufferHeight / 2f));
+
+        pixel = new Texture2D(GraphicsDevice, 1, 1);
+        pixel.SetData(new[] { Color.White });
     }
 
     protected override void Update(GameTime gameTime)
     {
         KeyboardState k = Keyboard.GetState();
-
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             k.IsKeyDown(Keys.Escape))
             Exit();
+
+        if (_gameOver)
+        {
+            if (k.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
+            {
+                RestartGame();
+            }
+            //_previousKeyboardState = k;
+        }
+
+        if (k.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P))
+        {
+            isPaused = !isPaused;
+        }
+
+        if (isPaused)
+        {
+            _previousKeyboardState = k;
+            return;
+        }
+
 
         if (startTimer)
             ptimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -107,10 +137,8 @@ public class Game1 : Game
 
         if (k.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space))
         {
-            spaceship.Shoot(_projectiles, _projectileTexture, gameTime);
+            spaceship.Shoot(_projectiles, _projectileTexture);
         }
-
-        _previousKeyboardState = k;
 
         if (spaceship.GetLives() <= 0)
         {
@@ -148,7 +176,7 @@ public class Game1 : Game
             {
                 spaceship.LoseLife();
                 _asteroids.RemoveAt(i);
-            }
+            } 
             else if (_asteroids[i].IsOffScreen(_graphics.PreferredBackBufferWidth,
                          _graphics.PreferredBackBufferHeight))
             {
@@ -222,6 +250,7 @@ public class Game1 : Game
                 }
             }
         }
+        
 
         _asteroids.RemoveAll(a => _asteroidsToRemove.Contains(a));
         _asteroidsToRemove.Clear();
@@ -231,6 +260,8 @@ public class Game1 : Game
 
         _powerups.RemoveAll(po => _powerupsToRemove.Contains(po));
         _powerupsToRemove.Clear();
+
+        _previousKeyboardState = k;
 
         base.Update(gameTime);
     }
@@ -246,11 +277,12 @@ public class Game1 : Game
         
         _asteroids.Clear();
         _projectiles.Clear();
+        _powerups.Clear();
         _asteroidsToRemove.Clear();
         _projectilesToRemove.Clear();
-        
+        _powerupsToRemove.Clear();
         spaceship = new Spaceship(_spaceshipTexture,
-            new Vector2(_spaceshipTexture.Width / 2f, _spaceshipTexture.Height / 2f));
+            new Vector2(_graphics.PreferredBackBufferWidth / 2f - 50, _graphics.PreferredBackBufferHeight / 2f));
     }
 
     private void SpawnAsteroid()
@@ -290,25 +322,33 @@ public class Game1 : Game
         if (!_gameOver)
         {
             spaceship.Draw(_spriteBatch, ptimer);
+            //_spriteBatch.Draw(pixel, spaceship.GetBounds(), Color.Blue * 0.3f);
 
             foreach (var asteroid in _asteroids)
             {
                 asteroid.Draw(_spriteBatch);
+                //_spriteBatch.Draw(pixel, asteroid.GetBoundingBox(), Color.Red * 0.3f);
             }
 
             foreach (var projectile in _projectiles)
             {
                 projectile.Draw(_spriteBatch);
+                //_spriteBatch.Draw(pixel, projectile.GetBounds(), Color.Green * 0.3f);
             }
             
             foreach (var powerup in _powerups)
             {
                 powerup.Draw(_spriteBatch);
+                //_spriteBatch.Draw(pixel, powerup.GetBoundingBox(), Color.Blue * 0.3f);
+            }
+            if (isPaused)
+            {
+                _spriteBatch.DrawString(_font, " | PAUSED |", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 130, _graphics.PreferredBackBufferHeight / 2 - 10), Color.White);
             }
 
             _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
         }
-        else
+        else if (_gameOver)
         {
             _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
             spaceship.Update(gameTime, Keyboard.GetState(), _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
