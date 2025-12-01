@@ -88,7 +88,7 @@ public class Game1 : Game
         if (startTimer)
             ptimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        if (ptimer >= 5)
+        if (ptimer >= 6)
         {
             spaceship.changeSpeed(5f);
             spaceship.invincible = false;
