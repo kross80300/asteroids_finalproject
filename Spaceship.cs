@@ -67,7 +67,7 @@ public class Spaceship
         Vector2 origin = new Vector2(frame / 2f, frame / 2f);
         if (invincible)
         {
-            if (ptimer < 3f)
+            if (ptimer < 4f)
             {
                 if (ptimer % 1f < 0.5f)
                 {
