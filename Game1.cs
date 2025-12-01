@@ -144,7 +144,7 @@ public class Game1 : Game
         {
             _asteroids[i].Update(gameTime);
 
-            if (_asteroids[i].ReachedBottom(_graphics.PreferredBackBufferHeight))
+            if (_asteroids[i].ReachedBottom(_graphics.PreferredBackBufferHeight) && !spaceship.invincible)
             {
                 spaceship.LoseLife();
                 _asteroids.RemoveAt(i);
