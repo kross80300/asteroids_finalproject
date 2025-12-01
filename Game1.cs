@@ -289,7 +289,7 @@ public class Game1 : Game
 
         if (!_gameOver)
         {
-            spaceship.Draw(_spriteBatch);
+            spaceship.Draw(_spriteBatch, ptimer);
 
             foreach (var asteroid in _asteroids)
             {
@@ -310,7 +310,7 @@ public class Game1 : Game
         }
         else
         {
-            _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score, _highScoreManager.GetHighScore());
+            _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
             spaceship.Update(gameTime, Keyboard.GetState(), _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
             spaceship.Draw(_spriteBatch, ptimer);
         }
