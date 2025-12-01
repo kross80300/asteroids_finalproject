@@ -134,7 +134,7 @@ public class Game1 : Game
         {
             _asteroidSpawnTimer = 0f;
             SpawnAsteroid();
-            if (_random.NextDouble() < 0.1)
+            if (_random.NextDouble() < 0.15)
             {
                 SpawnPowerup();
             }
@@ -168,7 +168,7 @@ public class Game1 : Game
 
         foreach (var a in _asteroids)
         {
-            if (spaceship.GetBounds().Intersects(a.GetBoundingBox()))
+            if (spaceship.GetBounds().Intersects(a.GetBoundingBox()) && !spaceship.invincible)
             {
                 spaceship.LoseLife();
                 _asteroidsToRemove.Add(a);
@@ -250,7 +250,7 @@ public class Game1 : Game
         _projectilesToRemove.Clear();
         
         spaceship = new Spaceship(_spaceshipTexture,
-            new Vector2(_spaceshipTexture.Width / 2f, _spaceshipTexture.Height / 2f), 5f);
+            new Vector2(_spaceshipTexture.Width / 2f, _spaceshipTexture.Height / 2f));
     }
 
     private void SpawnAsteroid()
