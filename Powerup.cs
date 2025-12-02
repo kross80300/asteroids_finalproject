@@ -9,9 +9,9 @@ public class Powerup
     private int frameCount = 6;
     private float frameTime = 0.25f;
     private int currFrame = 0; 
-    private int frameW = 94;
+    private int frameW = 95;
     private int frameH = 101;
-    private Rectangle img = new Rectangle(0, 0, 94, 101);
+    private Rectangle img = new Rectangle(0, 0, 95, 101);
 
     private Vector2 position;
     private int type;
@@ -47,7 +47,7 @@ public class Powerup
         position += velocity;
 
         frameTime += (float)time.ElapsedGameTime.TotalSeconds;
-        if (frameTime >= 0.1f)
+        if (frameTime >= 0.09f)
         {
             frameTime = 0f;
             if (currFrame >= frameCount)
@@ -74,15 +74,5 @@ public class Powerup
     {
         spriteBatch.Draw(texture, position, img, color, 0.0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
     }
-
-
-
-
-
-
-
-
-
-
 
 }
