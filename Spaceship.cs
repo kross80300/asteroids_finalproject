@@ -22,6 +22,7 @@ public class Spaceship
     public bool invincible = false;
     public bool trippleShot = false;
     public bool rapidFire = false;
+    private Color color = Color.White;
     public Spaceship(Texture2D spriteSheet, Vector2 position)
     {
         this.spriteSheet = spriteSheet;
@@ -67,38 +68,49 @@ public class Spaceship
         Vector2 origin = new Vector2(frame / 2f, frame / 2f);
         if (invincible)
         {
-            if (ptimer < 4f)
+            if (ptimer < 5f)
             {
                 if (ptimer % 1f < 0.5f)
                 {
-                    spriteBatch.Draw(spriteSheet, position + origin, img, Color.LightGoldenrodYellow * .4f, -MathF.PI / 2, origin, new Vector2(1.3f, 1.3f), SpriteEffects.None, 0f);
+                    color = Color.LightGoldenrodYellow * .4f;
                 }
                 else
                 {
-                    spriteBatch.Draw(spriteSheet, position + origin, img, Color.LightGoldenrodYellow * .9f, -MathF.PI / 2, origin, new Vector2(1.3f, 1.3f), SpriteEffects.None, 0f);
+                    color = Color.LightGoldenrodYellow * .9f;
                 }
             }
             else
             {
                 if (ptimer % 0.5f < 0.25f)
                 {
-                    spriteBatch.Draw(spriteSheet, position + origin, img, Color.LightGoldenrodYellow * .4f, -MathF.PI / 2, origin, new Vector2(1.3f, 1.3f), SpriteEffects.None, 0f);
+                    color = Color.LightGoldenrodYellow * .4f;
                 }
                 else
                 {
-                    spriteBatch.Draw(spriteSheet, position + origin, img, Color.LightGoldenrodYellow * 1f, -MathF.PI / 2, origin, new Vector2(1.3f, 1.3f), SpriteEffects.None, 0f);
+                    color = Color.LightGoldenrodYellow * 1f;
                 }
             }
             
         }
         else if (speed > 6f)
         {
-            spriteBatch.Draw(spriteSheet, position + origin, img, new Color(1f, 0.5f, 0.5f), -MathF.PI / 2, origin, new Vector2(1.3f, 1.3f), SpriteEffects.None, 0f);
+            color = new Color(1f, 0.6f, 0.6f);
+        }
+        else if (rapidFire)
+        {
+            color = new Color(0.6f, 1f, 0.6f);
+        }
+        else if (trippleShot)
+        {
+            color = new Color(0.6f, 0.6f, 1f);
         }
         else
         {
-            spriteBatch.Draw(spriteSheet, position + origin, img, Color.White, -MathF.PI / 2, origin, new Vector2(1.3f, 1.3f), SpriteEffects.None, 0f);
+            color = Color.White;
         }
+
+        spriteBatch.Draw(spriteSheet, position + origin, img, color, -MathF.PI / 2, origin, new Vector2(1.3f, 1.3f), SpriteEffects.None, 0f);
+        
     }
 
     public int GetLives()
