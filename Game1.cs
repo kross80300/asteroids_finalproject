@@ -105,8 +105,7 @@ namespace asteroids_finalproject
             
             if (k.IsKeyDown(Keys.Escape))
                 Exit();
-
-            // Main Menu State
+            
             if (_state == GameState.MainMenu)
             {
                 if (k.IsKeyDown(Keys.Enter) && !_previousKeyboardState.IsKeyDown(Keys.Enter))
@@ -117,8 +116,7 @@ namespace asteroids_finalproject
                 _previousKeyboardState = k;
                 return;
             }
-
-            // Pause/Unpause
+            
             if (_state == GameState.Playing)
             {
                 if (k.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P))
@@ -136,8 +134,7 @@ namespace asteroids_finalproject
                 _previousKeyboardState = k;
                 return;
             }
-
-            // Game Over State
+            
             if (_state == GameState.GameOver)
             {
                 if (k.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
@@ -148,8 +145,7 @@ namespace asteroids_finalproject
                 _previousKeyboardState = k;
                 return;
             }
-
-            // Powerup Timer
+            
             if (startTimer)
                 ptimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -234,7 +230,6 @@ namespace asteroids_finalproject
                 }
             }
 
-            // Collision: Spaceship with Asteroids
             foreach (var a in _asteroids)
             {
                 if (spaceship.GetBounds().Intersects(a.GetBoundingBox()) && !spaceship.invincible)
@@ -244,7 +239,6 @@ namespace asteroids_finalproject
                 }
             }
 
-            // Collision: Spaceship with Powerups
             foreach (var po in _powerups)
             {
                 if (spaceship.GetBounds().Intersects(po.GetBoundingBox()))
@@ -272,8 +266,7 @@ namespace asteroids_finalproject
                     _powerupsToRemove.Add(po);
                 }
             }
-
-            // Collision: Projectiles with Asteroids
+            
             foreach (var projectile in _projectiles)
             {
                 foreach (var asteroid in _asteroids)
@@ -362,8 +355,7 @@ namespace asteroids_finalproject
             GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
-
-            // Main Menu
+            
             if (_state == GameState.MainMenu)
             {
                 string title = "ASTEROIDS";
@@ -390,8 +382,7 @@ namespace asteroids_finalproject
                 _spriteBatch.End();
                 return;
             }
-
-            // Game Over Screen
+            
             if (_state == GameState.GameOver)
             {
                 _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score, _highScoreManager.GetHighScore());
@@ -401,7 +392,6 @@ namespace asteroids_finalproject
                 return;
             }
 
-            // Playing or Paused
             spaceship.Draw(_spriteBatch, ptimer);
 
             foreach (var asteroid in _asteroids)

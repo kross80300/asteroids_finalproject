@@ -20,6 +20,11 @@
 /processorParam:TextureFormat=Compressed
 /build:font/GameFont.spritefont
 
+#begin sounds/shoot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/shoot.wav
 
 #begin textures/asteroid.png
 /importer:TextureImporter
