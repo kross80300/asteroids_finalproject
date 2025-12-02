@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -118,7 +118,7 @@ public class Game1 : Game
         if (startTimer)
             ptimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        if (ptimer >= 6)
+        if (ptimer >= 7f)
         {
             spaceship.changeSpeed(5f);
             spaceship.invincible = false;
@@ -162,7 +162,7 @@ public class Game1 : Game
         {
             _asteroidSpawnTimer = 0f;
             SpawnAsteroid();
-            if (_random.NextDouble() < 0.15)
+            if (_random.NextDouble() < 0.1)
             {
                 SpawnPowerup();
             }
@@ -172,9 +172,12 @@ public class Game1 : Game
         {
             _asteroids[i].Update(gameTime);
 
-            if (_asteroids[i].ReachedBottom(_graphics.PreferredBackBufferHeight) && !spaceship.invincible)
+            if (_asteroids[i].ReachedBottom(_graphics.PreferredBackBufferHeight))
             {
-                spaceship.LoseLife();
+                if (!spaceship.invincible)
+                {
+                    spaceship.LoseLife();
+                } 
                 _asteroids.RemoveAt(i);
             } 
             else if (_asteroids[i].IsOffScreen(_graphics.PreferredBackBufferWidth,
@@ -207,22 +210,22 @@ public class Game1 : Game
         {
             if (spaceship.GetBounds().Intersects(po.GetBoundingBox()))
             {
-                if (po.getType() == 0)
+                if (po.getType() == 0 && ptimer <= 0f)
                 {
                     spaceship.changeSpeed(9f);
                     startTimer = true;
                 }
-                else if (po.getType() == 1 && !startTimer)
+                else if (po.getType() == 1 && ptimer <= 0f)
                 {
                     spaceship.invincible = true;
                     startTimer = true;
                 }
-                else if (po.getType() == 2 && !startTimer)
+                else if (po.getType() == 2 && ptimer <= 0f)
                 {
                     spaceship.trippleShot = true;
                     startTimer = true;
                 }
-                else if (po.getType() == 3 && !startTimer)
+                else if (po.getType() == 3 && ptimer <= 0f)
                 {
                     spaceship.rapidFire = true;
                     startTimer = true;
@@ -350,7 +353,7 @@ public class Game1 : Game
         }
         else if (_gameOver)
         {
-            _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
+            _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score, _highScoreManager.GetHighScore());
             spaceship.Update(gameTime, Keyboard.GetState(), _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
             spaceship.Draw(_spriteBatch, ptimer);
         }
