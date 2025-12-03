@@ -132,6 +132,7 @@ public class Game1 : Game
                     spaceship.rapidFire = false;
                     startTimer = false;
                     ptimer = 0;
+                    shield = null;
                 }
 
                 foreach (var powerup in _powerups)
@@ -140,7 +141,10 @@ public class Game1 : Game
                 }
 
                 spaceship.Update(gameTime, k, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
-
+                if (shield != null)
+                {
+                    shield.Update(ptimer);
+                }
                 if (spaceship.GetLives() <= 0 && !_explosionPlayed)
                 {
                     _explosionSound.Play();
@@ -221,6 +225,7 @@ public class Game1 : Game
                         else if (po.getType() == 1 && ptimer <= 0f)
                         {
                             spaceship.invincible = true;
+                            shield = new Shield(spaceship.position, _shieldTexture);
                             startTimer = true;
                         }
                         else if (po.getType() == 2 && ptimer <= 0f)
@@ -397,6 +402,10 @@ public class Game1 : Game
             case GameState.Playing:
             case GameState.Paused:
                 spaceship.Draw(_spriteBatch, ptimer);
+                if (shield != null)
+                {
+                    shield.Draw(_spriteBatch, spaceship);
+                }
 
                 foreach (var asteroid in _asteroids)
                     asteroid.Draw(_spriteBatch);
