@@ -108,19 +108,163 @@ public class Game1 : Game
         switch (_currentGameState)
         {
             case GameState.MainMenu:
-                if (k.IsKeyDown(Keys.Enter)) // Start game
+                if (k.IsKeyDown(Keys.Enter))
                 {
                     _currentGameState = GameState.Playing;
                 }
                 break;
 
             case GameState.Playing:
-                // Put all current game logic here (spawning asteroids, spaceship movement, collisions, etc.)
                 if (k.IsKeyDown(Keys.F) && !_previousKeyboardState.IsKeyDown(Keys.F))
                     _currentGameState = GameState.Paused;
+                if (startTimer)
+                    ptimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                // Everything else from your Update() that handles gameplay goes here
-                // This includes timers, projectile updates, asteroid updates, powerup logic, collisions, scoring, etc.
+                if (ptimer >= 7f)
+                {
+                    spaceship.changeSpeed(5f);
+                    spaceship.invincible = false;
+                    spaceship.trippleShot = false;
+                    spaceship.rapidFire = false;
+                    startTimer = false;
+                    ptimer = 0;
+                }
+
+                foreach (var powerup in _powerups)
+                {
+                    powerup.Update(gameTime);
+                }
+
+                spaceship.Update(gameTime, k, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+
+                if (spaceship.GetLives() <= 0)
+                {
+                    _gameOver = true;
+                    _highScoreManager.CheckAndUpdateHighScore(_score);
+                    return;
+                }
+
+                float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                _levelTimer += deltaTime;
+                if (_levelTimer >= LEVEL_DURATION)
+                {
+                    _levelTimer = 0f;
+                    _currentLevel++;
+                    _asteroidSpawnInterval = Math.Max(0.5f, _asteroidSpawnInterval - 0.1f);
+                }
+
+                _asteroidSpawnTimer += deltaTime;
+                if (_asteroidSpawnTimer >= _asteroidSpawnInterval)
+                {
+                    _asteroidSpawnTimer = 0f;
+                    SpawnAsteroid();
+                    if (_random.NextDouble() < 0.1)
+                    {
+                        SpawnPowerup();
+                    }
+                }
+
+                for (int i = _asteroids.Count - 1; i >= 0; i--)
+                {
+                    _asteroids[i].Update(gameTime);
+
+                    if (_asteroids[i].ReachedBottom(_graphics.PreferredBackBufferHeight))
+                    {
+                        if (!spaceship.invincible)
+                        {
+                            spaceship.LoseLife();
+                        }
+                        _asteroids.RemoveAt(i);
+                    }
+                    else if (_asteroids[i].IsOffScreen(_graphics.PreferredBackBufferWidth,
+                                _graphics.PreferredBackBufferHeight))
+                    {
+                        _asteroids.RemoveAt(i);
+                    }
+                }
+
+                for (int i = _projectiles.Count - 1; i >= 0; i--)
+                {
+                    _projectiles[i].Update(gameTime);
+
+                    if (_projectiles[i].IsOffScreen(_graphics.PreferredBackBufferHeight))
+                    {
+                        _projectiles.RemoveAt(i);
+                    }
+                }
+
+                foreach (var a in _asteroids)
+                {
+                    if (spaceship.GetBounds().Intersects(a.GetBoundingBox()) && !spaceship.invincible)
+                    {
+                        spaceship.LoseLife();
+                        _asteroidsToRemove.Add(a);
+                    }
+                }
+
+                foreach (var po in _powerups)
+                {
+                    if (spaceship.GetBounds().Intersects(po.GetBoundingBox()))
+                    {
+                        if (po.getType() == 0 && ptimer <= 0f)
+                        {
+                            spaceship.changeSpeed(9f);
+                            startTimer = true;
+                        }
+                        else if (po.getType() == 1 && ptimer <= 0f)
+                        {
+                            spaceship.invincible = true;
+                            startTimer = true;
+                        }
+                        else if (po.getType() == 2 && ptimer <= 0f)
+                        {
+                            spaceship.trippleShot = true;
+                            startTimer = true;
+                        }
+                        else if (po.getType() == 3 && ptimer <= 0f)
+                        {
+                            spaceship.rapidFire = true;
+                            startTimer = true;
+                        }
+                        _powerupsToRemove.Add(po);
+
+
+                    }
+                }
+
+                foreach (var projectile in _projectiles)
+                {
+                    foreach (var asteroid in _asteroids)
+                    {
+                        if (projectile.GetBounds().Intersects(asteroid.GetBoundingBox()))
+                        {
+                            _projectilesToRemove.Add(projectile);
+                            if (asteroid.TakeDamage())
+                            {
+                                _asteroidsToRemove.Add(asteroid);
+                                _score += 10;
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+
+                _asteroids.RemoveAll(a => _asteroidsToRemove.Contains(a));
+                _asteroidsToRemove.Clear();
+
+                _projectiles.RemoveAll(p => _projectilesToRemove.Contains(p));
+                _projectilesToRemove.Clear();
+
+                _powerups.RemoveAll(po => _powerupsToRemove.Contains(po));
+                _powerupsToRemove.Clear();
+                if (k.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space))
+                {
+                    spaceship.Shoot(_projectiles, _projectileTexture);
+                    _shootSound.Play();
+                }
                 break;
 
             case GameState.Paused:
@@ -140,12 +284,6 @@ public class Game1 : Game
             {
                 RestartGame();
             }
-            //_previousKeyboardState = k;
-        }
-        if (k.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space))
-        {
-            spaceship.Shoot(_projectiles, _projectileTexture);
-            _shootSound.Play();
         }
         if (k.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P))
         {
@@ -157,151 +295,6 @@ public class Game1 : Game
             _previousKeyboardState = k;
             return;
         }
-
-
-        if (startTimer)
-            ptimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-        if (ptimer >= 7f)
-        {
-            spaceship.changeSpeed(5f);
-            spaceship.invincible = false;
-            spaceship.trippleShot = false;
-            spaceship.rapidFire = false;
-            startTimer = false;
-            ptimer = 0;
-        }
-
-        foreach (var powerup in _powerups)
-        {
-            powerup.Update(gameTime);
-        }
-
-        spaceship.Update(gameTime, k, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
-
-        if (spaceship.GetLives() <= 0)
-        {
-            _gameOver = true;
-            _highScoreManager.CheckAndUpdateHighScore(_score);
-            return;
-        }
-
-        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-        _levelTimer += deltaTime;
-        if (_levelTimer >= LEVEL_DURATION)
-        {
-            _levelTimer = 0f;
-            _currentLevel++;
-            _asteroidSpawnInterval = Math.Max(0.5f, _asteroidSpawnInterval - 0.1f);
-        }
-
-        _asteroidSpawnTimer += deltaTime;
-        if (_asteroidSpawnTimer >= _asteroidSpawnInterval)
-        {
-            _asteroidSpawnTimer = 0f;
-            SpawnAsteroid();
-            if (_random.NextDouble() < 0.1)
-            {
-                SpawnPowerup();
-            }
-        }
-
-        for (int i = _asteroids.Count - 1; i >= 0; i--)
-        {
-            _asteroids[i].Update(gameTime);
-
-            if (_asteroids[i].ReachedBottom(_graphics.PreferredBackBufferHeight))
-            {
-                if (!spaceship.invincible)
-                {
-                    spaceship.LoseLife();
-                }
-                _asteroids.RemoveAt(i);
-            }
-            else if (_asteroids[i].IsOffScreen(_graphics.PreferredBackBufferWidth,
-                         _graphics.PreferredBackBufferHeight))
-            {
-                _asteroids.RemoveAt(i);
-            }
-        }
-
-        for (int i = _projectiles.Count - 1; i >= 0; i--)
-        {
-            _projectiles[i].Update(gameTime);
-
-            if (_projectiles[i].IsOffScreen(_graphics.PreferredBackBufferHeight))
-            {
-                _projectiles.RemoveAt(i);
-            }
-        }
-
-        foreach (var a in _asteroids)
-        {
-            if (spaceship.GetBounds().Intersects(a.GetBoundingBox()) && !spaceship.invincible)
-            {
-                spaceship.LoseLife();
-                _asteroidsToRemove.Add(a);
-            }
-        }
-
-        foreach (var po in _powerups)
-        {
-            if (spaceship.GetBounds().Intersects(po.GetBoundingBox()))
-            {
-                if (po.getType() == 0 && ptimer <= 0f)
-                {
-                    spaceship.changeSpeed(9f);
-                    startTimer = true;
-                }
-                else if (po.getType() == 1 && ptimer <= 0f)
-                {
-                    spaceship.invincible = true;
-                    startTimer = true;
-                }
-                else if (po.getType() == 2 && ptimer <= 0f)
-                {
-                    spaceship.trippleShot = true;
-                    startTimer = true;
-                }
-                else if (po.getType() == 3 && ptimer <= 0f)
-                {
-                    spaceship.rapidFire = true;
-                    startTimer = true;
-                }
-                _powerupsToRemove.Add(po);
-
-
-            }
-        }
-
-        foreach (var projectile in _projectiles)
-        {
-            foreach (var asteroid in _asteroids)
-            {
-                if (projectile.GetBounds().Intersects(asteroid.GetBoundingBox()))
-                {
-                    _projectilesToRemove.Add(projectile);
-                    if (asteroid.TakeDamage())
-                    {
-                        _asteroidsToRemove.Add(asteroid);
-                        _score += 10;
-                    }
-
-                    break;
-                }
-            }
-        }
-
-
-        _asteroids.RemoveAll(a => _asteroidsToRemove.Contains(a));
-        _asteroidsToRemove.Clear();
-
-        _projectiles.RemoveAll(p => _projectilesToRemove.Contains(p));
-        _projectilesToRemove.Clear();
-
-        _powerups.RemoveAll(po => _powerupsToRemove.Contains(po));
-        _powerupsToRemove.Clear();
 
         _previousKeyboardState = k;
 
@@ -363,24 +356,20 @@ public class Game1 : Game
         if (!_gameOver)
         {
             spaceship.Draw(_spriteBatch, ptimer);
-            //_spriteBatch.Draw(pixel, spaceship.GetBounds(), Color.Blue * 0.3f);
 
             foreach (var asteroid in _asteroids)
             {
                 asteroid.Draw(_spriteBatch);
-                //_spriteBatch.Draw(pixel, asteroid.GetBoundingBox(), Color.Red * 0.3f);
             }
 
             foreach (var projectile in _projectiles)
             {
                 projectile.Draw(_spriteBatch);
-                //_spriteBatch.Draw(pixel, projectile.GetBounds(), Color.Green * 0.3f);
             }
 
             foreach (var powerup in _powerups)
             {
                 powerup.Draw(_spriteBatch);
-                //_spriteBatch.Draw(pixel, powerup.GetBoundingBox(), Color.Blue * 0.3f);
             }
             if (isPaused)
             {
@@ -398,13 +387,13 @@ public class Game1 : Game
         switch (_currentGameState)
         {
             case GameState.MainMenu:
-                _spriteBatch.DrawString(_font, "ASTEROIDS GAME", new Vector2(400, 200), Color.White);
-                _spriteBatch.DrawString(_font, "Press ENTER to Start", new Vector2(400, 300), Color.White);
-                _spriteBatch.DrawString(_font, "WASD to Move, SPACE to Shoot", new Vector2(400, 350), Color.White);
+                _spriteBatch.DrawString(_font, "ASTEROIDS GAME", new Vector2(400, 200), Color.RoyalBlue);
+                _spriteBatch.DrawString(_font, "Press ENTER to Start", new Vector2(400, 300), Color.Red);
+                _spriteBatch.DrawString(_font, "WASD to Move, SPACE to Shoot", new Vector2(400, 350), Color.Red);
                 break;
 
             case GameState.Playing:
-            case GameState.Paused: // For paused, just draw the game behind the pause text
+            case GameState.Paused:
                 spaceship.Draw(_spriteBatch, ptimer);
 
                 foreach (var asteroid in _asteroids)
