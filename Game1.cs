@@ -144,6 +144,7 @@ public class Game1 : Game
                     _explosionPlayed = true;
                     _gameOver = true;
                     _highScoreManager.CheckAndUpdateHighScore(_score);
+                    _currentGameState = GameState.GameOver;
                     return;
                 }
 
@@ -266,8 +267,7 @@ public class Game1 : Game
                 _powerupsToRemove.Clear();
                 if (k.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space))
                 {
-                    spaceship.Shoot(_projectiles, _projectileTexture);
-                    _shootSound.Play();
+                    spaceship.Shoot(_projectiles, _projectileTexture, _shootSound);
                 }
                 break;
 
@@ -280,14 +280,6 @@ public class Game1 : Game
                 if (k.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
                     RestartGame();
                 break;
-        }
-
-        if (_gameOver)
-        {
-            if (k.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
-            {
-                RestartGame();
-            }
         }
         _previousKeyboardState = k;
 
@@ -311,6 +303,7 @@ public class Game1 : Game
         _powerupsToRemove.Clear();
         spaceship = new Spaceship(_spaceshipTexture,
             new Vector2(_graphics.PreferredBackBufferWidth / 2f - 50, _graphics.PreferredBackBufferHeight / 2f));
+        _currentGameState = GameState.Playing;
     }
 
     private void SpawnAsteroid()

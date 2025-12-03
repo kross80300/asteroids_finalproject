@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework.Audio;
+
 namespace asteroids_finalproject;
 using System;
 using System.Collections.Generic;
@@ -151,7 +153,7 @@ public class Spaceship
         }
     }
 
-    public void Shoot(List<Projectile> projectiles, Texture2D pixel)
+    public void Shoot(List<Projectile> projectiles, Texture2D pixel, SoundEffect shootSound)
     {
         if (lastShotTime >= gunCooldown)
         {
@@ -166,6 +168,7 @@ public class Spaceship
             {
                 lastShotTime = gunCooldown;
             }
+            shootSound.Play();
         }
     }
 }
