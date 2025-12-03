@@ -26,6 +26,12 @@
 /processorParam:TextureFormat=Compressed
 /build:font/GameFont.spritefont
 
+#begin sounds/loud-explosion-425457.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/loud-explosion-425457.wav
+
 #begin textures/asteroid.png
 /importer:TextureImporter
 /processor:TextureProcessor

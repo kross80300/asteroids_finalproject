@@ -18,9 +18,10 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    private bool _explosionPlayed = false;
     private Texture2D _asteroidTexture;
     private SoundEffect _shootSound;
-
+    private SoundEffect _explosionSound;
     private GameState _currentGameState = GameState.MainMenu;
 
     private List<Asteroid> _asteroids;
@@ -53,8 +54,6 @@ public class Game1 : Game
     private float ptimer = 0f;
     private Texture2D pixel;
     private bool isPaused = false;
-    private Shield shield;
-    private Texture2D _shieldTexture;
 
     public Game1()
     {
@@ -85,7 +84,6 @@ public class Game1 : Game
         _spaceshipTexture = Content.Load<Texture2D>("textures/spaceshipTexture");
         _font = Content.Load<SpriteFont>("font/GameFont");
         _powerupTexture = Content.Load<Texture2D>("textures/powerupSS");
-        _shieldTexture = Content.Load<Texture2D>("textures/projectile");
 
         Texture2D heartTexture = Content.Load<Texture2D>("textures/pixelheart");
 
@@ -100,6 +98,7 @@ public class Game1 : Game
         pixel = new Texture2D(GraphicsDevice, 1, 1);
         pixel.SetData(new[] { Color.White });
         _shootSound = Content.Load<SoundEffect>("sounds/shoot-4-102361");
+        _explosionSound = Content.Load<SoundEffect>("sounds/loud-explosion-425457");
     }
 
     protected override void Update(GameTime gameTime)
@@ -131,7 +130,6 @@ public class Game1 : Game
                     spaceship.rapidFire = false;
                     startTimer = false;
                     ptimer = 0;
-                    shield = null;
                 }
 
                 foreach (var powerup in _powerups)
@@ -140,12 +138,11 @@ public class Game1 : Game
                 }
 
                 spaceship.Update(gameTime, k, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
-                if (shield != null)
+
+                if (spaceship.GetLives() <= 0 && !_explosionPlayed)
                 {
-                    shield.Update(ptimer);
-                }
-                if (spaceship.GetLives() <= 0)
-                {
+                    _explosionSound.Play();
+                    _explosionPlayed = true;
                     _gameOver = true;
                     _highScoreManager.CheckAndUpdateHighScore(_score);
                     return;
@@ -222,7 +219,6 @@ public class Game1 : Game
                         else if (po.getType() == 1 && ptimer <= 0f)
                         {
                             spaceship.invincible = true;
-                            shield = new Shield(new Vector2(spaceship.position.X, spaceship.position.Y), _shieldTexture);
                             startTimer = true;
                         }
                         else if (po.getType() == 2 && ptimer <= 0f)
@@ -251,6 +247,7 @@ public class Game1 : Game
                             if (asteroid.TakeDamage())
                             {
                                 _asteroidsToRemove.Add(asteroid);
+                                _explosionSound.Play();
                                 _score += 10;
                             }
 
@@ -311,6 +308,7 @@ public class Game1 : Game
     private void RestartGame()
     {
         _gameOver = false;
+        _explosionPlayed = false;
         _score = 0;
         _currentLevel = 1;
         _levelTimer = 0f;
@@ -363,10 +361,6 @@ public class Game1 : Game
 
         if (!_gameOver)
         {
-            if (shield != null)
-            {
-                shield.Draw(_spriteBatch, spaceship);
-            }
             spaceship.Draw(_spriteBatch, ptimer);
 
             foreach (var asteroid in _asteroids)
