@@ -53,6 +53,8 @@ public class Game1 : Game
     private float ptimer = 0f;
     private Texture2D pixel;
     private bool isPaused = false;
+    private Shield shield;
+    private Texture2D _shieldTexture;
 
     public Game1()
     {
@@ -83,6 +85,7 @@ public class Game1 : Game
         _spaceshipTexture = Content.Load<Texture2D>("textures/spaceshipTexture");
         _font = Content.Load<SpriteFont>("font/GameFont");
         _powerupTexture = Content.Load<Texture2D>("textures/powerupSS");
+        _shieldTexture = Content.Load<Texture2D>("textures/projectile");
 
         Texture2D heartTexture = Content.Load<Texture2D>("textures/pixelheart");
 
@@ -128,6 +131,7 @@ public class Game1 : Game
                     spaceship.rapidFire = false;
                     startTimer = false;
                     ptimer = 0;
+                    shield = null;
                 }
 
                 foreach (var powerup in _powerups)
@@ -136,7 +140,10 @@ public class Game1 : Game
                 }
 
                 spaceship.Update(gameTime, k, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
-
+                if (shield != null)
+                {
+                    shield.Update(ptimer);
+                }
                 if (spaceship.GetLives() <= 0)
                 {
                     _gameOver = true;
@@ -215,6 +222,7 @@ public class Game1 : Game
                         else if (po.getType() == 1 && ptimer <= 0f)
                         {
                             spaceship.invincible = true;
+                            shield = new Shield(new Vector2(spaceship.position.X, spaceship.position.Y), _shieldTexture);
                             startTimer = true;
                         }
                         else if (po.getType() == 2 && ptimer <= 0f)
@@ -355,6 +363,10 @@ public class Game1 : Game
 
         if (!_gameOver)
         {
+            if (shield != null)
+            {
+                shield.Draw(_spriteBatch, spaceship);
+            }
             spaceship.Draw(_spriteBatch, ptimer);
 
             foreach (var asteroid in _asteroids)
