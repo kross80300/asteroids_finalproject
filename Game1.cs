@@ -206,9 +206,12 @@ public class Game1 : Game
 
                 foreach (var a in _asteroids)
                 {
-                    if (spaceship.GetBounds().Intersects(a.GetBoundingBox()) && !spaceship.invincible)
+                    if (spaceship.GetBounds().Intersects(a.GetBoundingBox()))
                     {
-                        spaceship.LoseLife();
+                        if (!spaceship.invincible)
+                        {
+                            spaceship.LoseLife();
+                        }
                         _asteroidsToRemove.Add(a);
                     }
                 }
