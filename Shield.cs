@@ -27,7 +27,7 @@ public class Shield
                     color *= 0.4f;
                 }
             }
-            else if (ptimer >= 5.5f)
+            else if (ptimer >= 5f)
             {
                 if (ptimer % 0.5f < 0.25f)
                 {
