@@ -20,6 +20,12 @@
 /processorParam:TextureFormat=Compressed
 /build:font/GameFont.spritefont
 
+#begin sounds/explosion.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/explosion.wav
+
 #begin sounds/shoot.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

@@ -20,14 +20,14 @@ public class Shield
     {
         color = Color.LightGoldenrodYellow * 0.7f;
         {
-            if (ptimer < 5.5f && ptimer >= 3.5f)
+            if (ptimer < 5f && ptimer >= 3f)
             {
                 if (ptimer % 1f < 0.5f)
                 {
                     color *= 0.4f;
                 }
             }
-            else if (ptimer >= 5.5f)
+            else if (ptimer >= 5f)
             {
                 if (ptimer % 0.5f < 0.25f)
                 {
