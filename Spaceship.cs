@@ -10,7 +10,7 @@ public class Spaceship
     private Texture2D spriteSheet;
     public Vector2 position;
     private Rectangle img;
-    private int frame = 99;
+    public int frame = 99;
     private int explosionFrameY = 285;
     public int lives;
     public float speed;

@@ -97,8 +97,8 @@ public class Game1 : Game
 
         pixel = new Texture2D(GraphicsDevice, 1, 1);
         pixel.SetData(new[] { Color.White });
-        _shootSound = Content.Load<SoundEffect>("sounds/shoot-4-102361");
-        _explosionSound = Content.Load<SoundEffect>("sounds/loud-explosion-425457");
+        _shootSound = Content.Load<SoundEffect>("sounds/shoot");
+        _explosionSound = Content.Load<SoundEffect>("sounds/explosion");
     }
 
     protected override void Update(GameTime gameTime)

@@ -13,12 +13,6 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin ../../shoot-4-102361.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:../../shoot-4-102361.wav;sounds/shoot-4-102361.wav
-
 #begin font/GameFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -26,11 +20,17 @@
 /processorParam:TextureFormat=Compressed
 /build:font/GameFont.spritefont
 
-#begin sounds/loud-explosion-425457.wav
+#begin sounds/explosion.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:sounds/loud-explosion-425457.wav
+/build:sounds/explosion.wav
+
+#begin sounds/shoot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:sounds/shoot.wav
 
 #begin textures/asteroid.png
 /importer:TextureImporter

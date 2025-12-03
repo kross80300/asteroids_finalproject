@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>C:/Users/amuly/Downloads/asteroids_finalproject-main/Content/../../shoot-4-102361.wav</SourceFile>
-  <SourceTime>2025-12-02T16:05:09.1437964-06:00</SourceTime>
-  <DestFile>C:/Users/amuly/Downloads/asteroids_finalproject-main/Content/bin/DesktopGL/Content/sounds/shoot-4-102361.xnb</DestFile>
-  <DestTime>2025-12-02T16:22:31.6168054-06:00</DestTime>
+  <SourceFile>/Users/katieross/Desktop/cs324e/Assignments/Final/asteroids_finalproject/Content/sounds/shoot-4-102361.wav</SourceFile>
+  <SourceTime>2025-12-02T23:03:48.5173878-06:00</SourceTime>
+  <DestFile>/Users/katieross/Desktop/cs324e/Assignments/Final/asteroids_finalproject/Content/bin/DesktopGL/Content/sounds/shoot-4-102361.xnb</DestFile>
+  <DestTime>2025-12-02T23:05:19.1268977-06:00</DestTime>
   <Importer>WavImporter</Importer>
   <ImporterTime>2025-06-02T05:31:02-05:00</ImporterTime>
   <Processor>SoundEffectProcessor</Processor>
