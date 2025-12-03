@@ -10,7 +10,7 @@ public class Spaceship
     private Texture2D spriteSheet;
     public Vector2 position;
     private Rectangle img;
-    private int frame = 99;
+    public int frame = 99;
     private int explosionFrameY = 285;
     public int lives;
     public float speed;
@@ -66,33 +66,8 @@ public class Spaceship
     public void Draw(SpriteBatch spriteBatch, float ptimer)
     {
         Vector2 origin = new Vector2(frame / 2f, frame / 2f);
-        if (invincible)
-        {
-            if (ptimer < 5f)
-            {
-                if (ptimer % 1f < 0.5f)
-                {
-                    color = Color.LightGoldenrodYellow * .4f;
-                }
-                else
-                {
-                    color = Color.LightGoldenrodYellow * .9f;
-                }
-            }
-            else
-            {
-                if (ptimer % 0.5f < 0.25f)
-                {
-                    color = Color.LightGoldenrodYellow * .4f;
-                }
-                else
-                {
-                    color = Color.LightGoldenrodYellow * 1f;
-                }
-            }
-            
-        }
-        else if (speed > 6f)
+        
+        if (speed > 6f)
         {
             color = new Color(1f, 0.6f, 0.6f);
         }
