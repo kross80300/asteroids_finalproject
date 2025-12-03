@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 
-
 namespace asteroids_finalproject;
 public enum GameState
 {
@@ -290,17 +289,6 @@ public class Game1 : Game
                 RestartGame();
             }
         }
-        if (k.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P))
-        {
-            isPaused = !isPaused;
-        }
-
-        if (isPaused)
-        {
-            _previousKeyboardState = k;
-            return;
-        }
-
         _previousKeyboardState = k;
 
         base.Update(gameTime);
@@ -379,7 +367,7 @@ public class Game1 : Game
             }
             if (isPaused)
             {
-                _spriteBatch.DrawString(_font, " | PAUSED |", new Vector2(_graphics.PreferredBackBufferWidth / 2 - 130, _graphics.PreferredBackBufferHeight / 2 - 10), Color.White);
+                _spriteBatch.DrawString(_font, " | PAUSED |", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 130, _graphics.PreferredBackBufferHeight / 2f - 10), Color.White);
             }
 
             _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
@@ -393,9 +381,10 @@ public class Game1 : Game
         switch (_currentGameState)
         {
             case GameState.MainMenu:
-                _spriteBatch.DrawString(_font, "ASTEROIDS GAME", new Vector2(400, 200), Color.RoyalBlue);
-                _spriteBatch.DrawString(_font, "Press ENTER to Start", new Vector2(400, 300), Color.Red);
-                _spriteBatch.DrawString(_font, "WASD to Move, SPACE to Shoot", new Vector2(400, 350), Color.Red);
+                _spriteBatch.DrawString(_font, "ASTEROIDS GAME", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 180, _graphics.PreferredBackBufferHeight / 2f - 10), Color.RoyalBlue);
+                _spriteBatch.DrawString(_font, "Press ENTER to Start", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 260, _graphics.PreferredBackBufferHeight / 2f + 40), Color.Red);
+                _spriteBatch.DrawString(_font, "WASD to Move, SPACE to Shoot", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 350, _graphics.PreferredBackBufferHeight / 2f + 80), Color.Red);
+                _spriteBatch.DrawString(_font, "F to Pause, R to Restart", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 310, _graphics.PreferredBackBufferHeight / 2f + 120), Color.Green);
                 break;
 
             case GameState.Playing:
@@ -414,7 +403,7 @@ public class Game1 : Game
                 _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
 
                 if (_currentGameState == GameState.Paused)
-                    _spriteBatch.DrawString(_font, "PAUSED", new Vector2(400, 200), Color.White);
+                    _spriteBatch.DrawString(_font, "| PAUSED |", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 130, _graphics.PreferredBackBufferHeight / 2f - 10), Color.White);
                 break;
 
             case GameState.GameOver:
