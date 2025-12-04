@@ -134,7 +134,7 @@ public class Game1 : Game
 
                 if (ptimer >= 7f)
                 {
-                    spaceship.changeSpeed(5f);
+                    spaceship.superSpeed = false;
                     spaceship.invincible = false;
                     spaceship.trippleShot = false;
                     spaceship.rapidFire = false;
@@ -241,7 +241,7 @@ public class Game1 : Game
                     {
                         if (po.getType() == 0 && ptimer <= 0f)
                         {
-                            spaceship.changeSpeed(9f);
+                            spaceship.superSpeed = true;
                             startTimer = true;
                         }
                         else if (po.getType() == 1 && ptimer <= 0f)
