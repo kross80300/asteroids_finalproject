@@ -6,13 +6,16 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 
 namespace asteroids_finalproject;
+
 public enum GameState
 {
     MainMenu,
     Playing,
     Paused,
-    GameOver
+    GameOver,
+    EnteringInitials
 }
+
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
@@ -55,6 +58,9 @@ public class Game1 : Game
     private float ptimer = 0f;
     private Texture2D pixel;
     private bool isPaused = false;
+    
+    private string _playerInitials = "";
+    private bool _isNewHighScore = false;
 
     public Game1()
     {
@@ -109,6 +115,7 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             k.IsKeyDown(Keys.Escape))
             Exit();
+            
         switch (_currentGameState)
         {
             case GameState.MainMenu:
@@ -121,6 +128,7 @@ public class Game1 : Game
             case GameState.Playing:
                 if (k.IsKeyDown(Keys.F) && !_previousKeyboardState.IsKeyDown(Keys.F))
                     _currentGameState = GameState.Paused;
+                    
                 if (startTimer)
                     ptimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -145,13 +153,23 @@ public class Game1 : Game
                 {
                     shield.Update(ptimer);
                 }
+                
                 if (spaceship.GetLives() <= 0 && !_explosionPlayed)
                 {
                     _explosionSound.Play();
                     _explosionPlayed = true;
                     _gameOver = true;
-                    _highScoreManager.CheckAndUpdateHighScore(_score);
-                    _currentGameState = GameState.GameOver;
+
+                    if (_highScoreManager.IsHighScore(_score))
+                    {
+                        _isNewHighScore = true;
+                        _playerInitials = "";
+                        _currentGameState = GameState.EnteringInitials;
+                    }
+                    else
+                    {
+                        _currentGameState = GameState.GameOver;
+                    }
                     return;
                 }
 
@@ -243,8 +261,6 @@ public class Game1 : Game
                             startTimer = true;
                         }
                         _powerupsToRemove.Add(po);
-
-
                     }
                 }
 
@@ -267,7 +283,6 @@ public class Game1 : Game
                     }
                 }
 
-
                 _asteroids.RemoveAll(a => _asteroidsToRemove.Contains(a));
                 _asteroidsToRemove.Clear();
 
@@ -276,6 +291,7 @@ public class Game1 : Game
 
                 _powerups.RemoveAll(po => _powerupsToRemove.Contains(po));
                 _powerupsToRemove.Clear();
+                
                 if (k.IsKeyDown(Keys.Space) && !_previousKeyboardState.IsKeyDown(Keys.Space))
                 {
                     spaceship.Shoot(_projectiles, _projectileTexture, _shootSound);
@@ -287,15 +303,46 @@ public class Game1 : Game
                     _currentGameState = GameState.Playing;
                 break;
 
+            case GameState.EnteringInitials:
+                HandleInitialsInput(k);
+                break;
+
             case GameState.GameOver:
                 if (k.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
                     RestartGame();
                 break;
         }
+        
         _previousKeyboardState = k;
-
         base.Update(gameTime);
     }
+
+    private void HandleInitialsInput(KeyboardState k)
+    {
+        Keys[] pressedKeys = k.GetPressedKeys();
+        
+        foreach (Keys key in pressedKeys)
+        {
+            if (!_previousKeyboardState.IsKeyDown(key))
+            {
+                if (key >= Keys.A && key <= Keys.Z && _playerInitials.Length < 3)
+                {
+                    _playerInitials += key.ToString();
+                }
+                else if (key == Keys.Back && _playerInitials.Length > 0)
+                {
+                    _playerInitials = _playerInitials.Substring(0, _playerInitials.Length - 1);
+                }
+                else if (key == Keys.Enter && _playerInitials.Length > 0)
+                {
+                    _highScoreManager.AddHighScore(_playerInitials, _score);
+                    _isNewHighScore = false;
+                    _currentGameState = GameState.GameOver;
+                }
+            }
+        }
+    }
+
     private void RestartGame()
     {
         _gameOver = false;
@@ -305,6 +352,8 @@ public class Game1 : Game
         _levelTimer = 0f;
         _asteroidSpawnInterval = 2.5f;
         _asteroidSpawnTimer = 0f;
+        _playerInitials = "";
+        _isNewHighScore = false;
 
         _asteroids.Clear();
         _projectiles.Clear();
@@ -312,6 +361,7 @@ public class Game1 : Game
         _asteroidsToRemove.Clear();
         _projectilesToRemove.Clear();
         _powerupsToRemove.Clear();
+        
         spaceship = new Spaceship(_spaceshipTexture,
             new Vector2(_graphics.PreferredBackBufferWidth / 2f - 50, _graphics.PreferredBackBufferHeight / 2f));
         _currentGameState = GameState.Playing;
@@ -351,51 +401,46 @@ public class Game1 : Game
 
         _spriteBatch.Begin();
 
-        if (!_gameOver)
-        {
-            if (shield != null)
-            {
-                shield.Draw(_spriteBatch, spaceship);
-            }
-            spaceship.Draw(_spriteBatch, ptimer);
-
-            foreach (var asteroid in _asteroids)
-            {
-                asteroid.Draw(_spriteBatch);
-            }
-
-            foreach (var projectile in _projectiles)
-            {
-                projectile.Draw(_spriteBatch);
-            }
-
-            foreach (var powerup in _powerups)
-            {
-                powerup.Draw(_spriteBatch);
-            }
-            if (isPaused)
-            {
-                _spriteBatch.DrawString(_font, " | PAUSED |", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 130, _graphics.PreferredBackBufferHeight / 2f - 10), Color.White);
-            }
-
-            _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
-        }
-        else if (_gameOver)
-        {
-            _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score, _highScoreManager.GetHighScore());
-            spaceship.Update(gameTime, Keyboard.GetState(), _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
-            spaceship.Draw(_spriteBatch, ptimer);
-        }
         switch (_currentGameState)
         {
             case GameState.MainMenu:
-                _spriteBatch.DrawString(_font, "ASTEROIDS GAME", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 180, _graphics.PreferredBackBufferHeight / 2f - 10), Color.RoyalBlue);
-                _spriteBatch.DrawString(_font, "Press ENTER to Start", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 260, _graphics.PreferredBackBufferHeight / 2f + 40), Color.Red);
-                _spriteBatch.DrawString(_font, "WASD to Move, SPACE to Shoot", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 350, _graphics.PreferredBackBufferHeight / 2f + 80), Color.Red);
-                _spriteBatch.DrawString(_font, "F to Pause, R to Restart", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 310, _graphics.PreferredBackBufferHeight / 2f + 120), Color.Green);
+                _spriteBatch.DrawString(_font, "ASTEROIDS GAME", 
+                    new Vector2(_graphics.PreferredBackBufferWidth / 2f - 180, 
+                                _graphics.PreferredBackBufferHeight / 2f - 10), 
+                    Color.RoyalBlue);
+                _spriteBatch.DrawString(_font, "Press ENTER to Start", 
+                    new Vector2(_graphics.PreferredBackBufferWidth / 2f - 260, 
+                                _graphics.PreferredBackBufferHeight / 2f + 40), 
+                    Color.Red);
+                _spriteBatch.DrawString(_font, "WASD to Move, SPACE to Shoot", 
+                    new Vector2(_graphics.PreferredBackBufferWidth / 2f - 350, 
+                                _graphics.PreferredBackBufferHeight / 2f + 80), 
+                    Color.Red);
+                _spriteBatch.DrawString(_font, "F to Pause, R to Restart", 
+                    new Vector2(_graphics.PreferredBackBufferWidth / 2f - 310, 
+                                _graphics.PreferredBackBufferHeight / 2f + 120), 
+                    Color.Green);
                 break;
 
             case GameState.Playing:
+                spaceship.Draw(_spriteBatch, ptimer);
+                if (shield != null)
+                {
+                    shield.Draw(_spriteBatch, spaceship);
+                }
+
+                foreach (var asteroid in _asteroids)
+                    asteroid.Draw(_spriteBatch);
+
+                foreach (var projectile in _projectiles)
+                    projectile.Draw(_spriteBatch);
+
+                foreach (var powerup in _powerups)
+                    powerup.Draw(_spriteBatch);
+
+                _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
+                break;
+
             case GameState.Paused:
                 spaceship.Draw(_spriteBatch, ptimer);
                 if (shield != null)
@@ -413,15 +458,63 @@ public class Game1 : Game
                     powerup.Draw(_spriteBatch);
 
                 _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
+                
+                _spriteBatch.DrawString(_font, "| PAUSED |", 
+                    new Vector2(_graphics.PreferredBackBufferWidth / 2f - 130, 
+                                _graphics.PreferredBackBufferHeight / 2f - 10), 
+                    Color.White);
+                break;
 
-                if (_currentGameState == GameState.Paused)
-                    _spriteBatch.DrawString(_font, "| PAUSED |", new Vector2(_graphics.PreferredBackBufferWidth / 2f - 130, _graphics.PreferredBackBufferHeight / 2f - 10), Color.White);
+            case GameState.EnteringInitials:
+                int currentHighScore = _highScoreManager.GetHighScore();
+                bool isActuallyNewHigh = _score > currentHighScore;
+                string prompt = isActuallyNewHigh ? "NEW HIGH SCORE!" : "HIGH SCORE!";
+                string instruction = "Enter Your Initials (Max 3 letters):";
+                string currentInitials = _playerInitials + "_";
+                string submitText = "Press ENTER to Submit";
+                string scoreText = $"Score: {_score}";
+                
+                _spriteBatch.DrawString(_font, prompt, 
+                    new Vector2(_graphics.PreferredBackBufferWidth / 2f - 200, 
+                                _graphics.PreferredBackBufferHeight / 2f - 150), 
+                    Color.Gold);
+                
+                _spriteBatch.DrawString(_font, scoreText, 
+                    new Vector2(_graphics.PreferredBackBufferWidth / 2f - 100, 
+                                _graphics.PreferredBackBufferHeight / 2f - 100), 
+                    Color.White);
+                
+                _spriteBatch.DrawString(_font, instruction, 
+                    new Vector2(_graphics.PreferredBackBufferWidth / 2f - 350, 
+                                _graphics.PreferredBackBufferHeight / 2f - 40), 
+                    Color.White);
+                
+                _spriteBatch.DrawString(_font, currentInitials, 
+                    new Vector2(_graphics.PreferredBackBufferWidth / 2f - 60, 
+                                _graphics.PreferredBackBufferHeight / 2f + 20), 
+                    Color.Cyan, 0f, Vector2.Zero, 2.5f, SpriteEffects.None, 0f);
+                
+                if (_playerInitials.Length > 0)
+                {
+                    _spriteBatch.DrawString(_font, submitText, 
+                        new Vector2(_graphics.PreferredBackBufferWidth / 2f - 220, 
+                                    _graphics.PreferredBackBufferHeight / 2f + 120), 
+                        Color.Green);
+                }
+                else
+                {
+                    _spriteBatch.DrawString(_font, "Press BACKSPACE to delete", 
+                        new Vector2(_graphics.PreferredBackBufferWidth / 2f - 260, 
+                                    _graphics.PreferredBackBufferHeight / 2f + 120), 
+                        Color.Gray);
+                }
                 break;
 
             case GameState.GameOver:
                 _gui.DrawGameOverScreen(_spriteBatch, _currentLevel, _score, _highScoreManager.GetHighScore());
                 break;
         }
+
         _spriteBatch.End();
 
         base.Draw(gameTime);
