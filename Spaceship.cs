@@ -15,7 +15,7 @@ public class Spaceship
     public int frame = 99;
     private int explosionFrameY = 285;
     public int lives;
-    public float speed;
+
     private float gunCooldown = 0.4f;
     private float lastShotTime = 0f;
     private int explosionFrames = 7;
@@ -24,17 +24,30 @@ public class Spaceship
     public bool invincible = false;
     public bool trippleShot = false;
     public bool rapidFire = false;
+    public bool superSpeed = false;
     private Color color = Color.White;
+    public Vector2 momentum = Vector2.Zero;
     public Spaceship(Texture2D spriteSheet, Vector2 position)
     {
         this.spriteSheet = spriteSheet;
         this.position = position;
         lives = 3;
-        speed = 5f;
     }
 
-    public void Update(GameTime time, KeyboardState keyboardState, int width, int height)
+    public void Update(GameTime time, KeyboardState keyboardState, int width, int height, int _currentLevel)
     {
+        Vector2 acceleration = Vector2.Zero;
+        float thrust = 0.3f + ((_currentLevel - 1) * 0.03f);
+        float maxSpeed = 7.5f + (_currentLevel * 0.1f);
+        if (_currentLevel >= 3 && !superSpeed)
+        {
+            maxSpeed = (_currentLevel - 3) * 0.2f + 7f;
+        }
+        if (superSpeed)
+        {
+            maxSpeed = (_currentLevel - 3) * 0.3f + 11f;
+            thrust = 0.4f + (_currentLevel * 0.03f);
+        }
         lastShotTime += (float)time.ElapsedGameTime.TotalSeconds;
         if (lives <= 0)
         {
@@ -44,25 +57,34 @@ public class Spaceship
         img = new Rectangle(0, 0, frame, frame);
         if (keyboardState.IsKeyDown(Keys.A) && position.X > 0)
         {
-            position.X -= speed;
+            acceleration.X -= thrust;
             img = new Rectangle(frame * 6, 0, frame, frame);
     
         }
         if (keyboardState.IsKeyDown(Keys.D) && position.X < width - frame)
         {
-            position.X += speed;
+            acceleration.X += thrust;
             img = new Rectangle(frame * 3, 0, frame, frame);
         }
         if (keyboardState.IsKeyDown(Keys.W) && position.Y > 0)
         {
-            position.Y -= speed;
+            acceleration.Y -= thrust;
         }
         if (keyboardState.IsKeyDown(Keys.S) && position.Y < height - frame)
         {
-            position.Y += speed;
+            acceleration.Y += thrust;
             img = new Rectangle(frame * 3, frame, frame, frame);
         }
-
+        momentum += acceleration;
+        momentum *= 0.99f;
+        if (momentum.Length() > maxSpeed)
+        {
+            momentum = Vector2.Normalize(momentum) * maxSpeed;
+        }
+        position += momentum;
+        position = new Vector2(
+            Math.Clamp(position.X, 0, width - frame),
+            Math.Clamp(position.Y, 0, height - frame));
     }
 
     public void Draw(SpriteBatch spriteBatch, float ptimer)
@@ -93,11 +115,6 @@ public class Spaceship
     public int GetLives()
     {
         return lives;
-    }
-
-    public void changeSpeed(float newSpeed)
-    {
-        speed = newSpeed;
     }
 
     public Rectangle GetBounds()
