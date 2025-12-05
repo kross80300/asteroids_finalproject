@@ -148,7 +148,7 @@ public class Game1 : Game
                     powerup.Update(gameTime);
                 }
 
-                spaceship.Update(gameTime, k, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+                spaceship.Update(gameTime, k, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight, _currentLevel);
                 if (shield != null)
                 {
                     shield.Update(ptimer);

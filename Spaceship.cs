@@ -91,7 +91,7 @@ public class Spaceship
     {
         Vector2 origin = new Vector2(frame / 2f, frame / 2f);
         
-        if (speed > 6f)
+        if (superSpeed)
         {
             color = new Color(1f, 0.6f, 0.6f);
         }
