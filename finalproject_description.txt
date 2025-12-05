@@ -1,0 +1,54 @@
+Asteroids Group
+Katie, Anunay, Spencer
+
+This project is our take on the classic arcade game "Asteroids" which builds off our assignment 7 project.
+While you will find similarities between the two, they are not identical as we added our own modifications to the game.
+This is a shooting game where the user will play as a spaceship gliding through space trying to destroy asteroids before they hit the bottom of the screen.
+The player will also try to avoid being hit by the asteroids as they fall.
+The user has three lives and loses one each time they are either hit by an asteroid or an asteroid reaches the bottom of the screen without being shot with a projectile.
+The user is able to collect power ups throughout the game that will benefit player strategy throughout playing.
+Lastly, game scores are saved into a text file with a users input initials and the highest score is loaded onto the main game play screen.
+
+Katie:
+- Asteroid class
+- GameGUI class
+- HighScores class
+- high score data input/output txt file
+    - entering initials at the end
+
+Anunay:
+- Projectile class
+- Main menu GUI
+- Sound implementation
+- Game states
+- Animation hierarchy within draw
+
+Spencer:
+- Powerup class
+- Shield class
+- Spaceship class
+- keyboard interactivity
+
+The Asteroid, Projectile, and Spaceship classes came from our assignment 7 project and handle the movement of the spaceship, the shooting mechanism, and the way the asteroids fall from the top of the screen.
+The spaceship class was modified to implement a more physics based movement, similar to the original Asteroids game, in order to allow for more interesting gameplay.
+The asteroid class was modified to increase the rate that the asteroids fall throughout incremental levels of the game. Both the asteroid class and spaceship class
+include bounding box rectangles to establish the hit boxes for each texture. A sprite sheet was implemented for the spaceship class to change its appearance as it moves throughout the screen.
+
+To enhance the GUI from our assignment 7, a new GUI class was added for the in game state of the screen. This included the display of high scores, current score, and current level. 
+The life counter was also changed to be represented as three red heart textures that turn gray when the player loses an in game life.
+A game over screen was also implemented within this class appearing after the user loses all three in game lives and displays their score, the wave they reached, the alltime high score, and if they achieved a new high score.
+The main menu aspect of the GUI was implemented within the Game1 class as was the initials entry GUI.
+
+Keyboard interactivity was also modified and added on to from our assignment 7. We use ENTER to start the game, WASD to move, SPACE to shoot, F to pause, R to restart, and the letters on the keyboard to enter a players initials.
+
+Powerup and Shield classes were added to enhance a players game play. The power ups allow four different enhancements, triple shot, super speed, rapid fire, and invincibility.
+The shield class uses an animation hierarchy with the spaceship class in order to produce a drawn shield over the spaceship when the invincibility power up is equipped.
+
+Sound was implemented in the Game1 class, activating when the SPACE bar is pressed to produce a shooting sound as a projectile is shot and an explosion sound for when an asteroid is hit.
+
+The HighScores class records and saves the high scores reached by the player and saves them with the user inputted initials into the highscores.txt file. 
+This file is then used to output the top highscore in the in game GUI which displays on the screen throughout game play. This is also implemented within the 
+Game1 file in order to determine if a player has reached a "new high score" or has reached a "high score" which means the score ranks within the top 10 of the current highest scores.
+
+
+
