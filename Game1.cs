@@ -180,7 +180,7 @@ public class Game1 : Game
                 {
                     _levelTimer = 0f;
                     _currentLevel++;
-                    _asteroidSpawnInterval = Math.Max(0.5f, _asteroidSpawnInterval - 0.1f);
+                    _asteroidSpawnInterval = Math.Max(0.3f, _asteroidSpawnInterval - 0.2f);
                 }
 
                 _asteroidSpawnTimer += deltaTime;
