@@ -17,12 +17,14 @@ namespace asteroids_finalproject
             _heartTexture = heartTexture;
         }
 
-        public void DrawHUD(SpriteBatch spriteBatch, int currentLevel, int score, int lives, int highScore)
+        public void DrawHUD(SpriteBatch spriteBatch, int currentLevel, int score, int lives, int highScore, string highScoreInitials = "")
         {
             int screenWidth = _graphicsDevice.Viewport.Width;
             int screenHeight = _graphicsDevice.Viewport.Height;
 
-            string highScoreText = $"High Score: {highScore}";
+            string highScoreText = string.IsNullOrEmpty(highScoreInitials) 
+                ? $"High Score: {highScore}" 
+                : $"High Score: {highScore} ({highScoreInitials})";
             string levelText = $"Wave: {currentLevel}";
             string scoreText = $"Score: {score}";
             

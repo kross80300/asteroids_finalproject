@@ -438,7 +438,7 @@ public class Game1 : Game
                 foreach (var powerup in _powerups)
                     powerup.Draw(_spriteBatch);
 
-                _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
+                _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore(), _highScoreManager.GetHighScoreInitials());
                 break;
 
             case GameState.Paused:
@@ -457,7 +457,7 @@ public class Game1 : Game
                 foreach (var powerup in _powerups)
                     powerup.Draw(_spriteBatch);
 
-                _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore());
+                _gui.DrawHUD(_spriteBatch, _currentLevel, _score, spaceship.GetLives(), _highScoreManager.GetHighScore(), _highScoreManager.GetHighScoreInitials());
                 
                 _spriteBatch.DrawString(_font, "| PAUSED |", 
                     new Vector2(_graphics.PreferredBackBufferWidth / 2f - 130, 

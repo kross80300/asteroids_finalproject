@@ -87,6 +87,13 @@ namespace asteroids_finalproject
                 return _highScores[0].Score;
             return 0;
         }
+        
+        public string GetHighScoreInitials()
+        {
+            if (_highScores.Count > 0)
+                return _highScores[0].Initials;
+            return "";
+        }
 
         public List<HighScoreEntry> GetHighScores()
         {
