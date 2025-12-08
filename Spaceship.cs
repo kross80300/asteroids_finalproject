@@ -76,7 +76,7 @@ public class Spaceship
             img = new Rectangle(frame * 3, frame, frame, frame);
         }
         momentum += acceleration;
-        momentum *= 0.99f;
+        momentum *= 0.994f;
         if (momentum.Length() > maxSpeed)
         {
             momentum = Vector2.Normalize(momentum) * maxSpeed;
