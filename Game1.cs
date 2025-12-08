@@ -423,12 +423,12 @@ public class Game1 : Game
                 break;
 
             case GameState.Playing:
-                spaceship.Draw(_spriteBatch, ptimer);
+                
                 if (shield != null)
                 {
                     shield.Draw(_spriteBatch, spaceship);
                 }
-
+                spaceship.Draw(_spriteBatch, ptimer);
                 foreach (var asteroid in _asteroids)
                     asteroid.Draw(_spriteBatch);
 
