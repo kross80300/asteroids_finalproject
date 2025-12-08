@@ -82,9 +82,17 @@ public class Spaceship
             momentum = Vector2.Normalize(momentum) * maxSpeed;
         }
         position += momentum;
+        if (position.X >= width - frame || position.X <= 0)
+        {
+            momentum.X = 0;
+        }
+        if (position.Y >= height - frame || position.Y <= 0)
+        {
+            momentum.Y = 0;
+        }
         position = new Vector2(
-            Math.Clamp(position.X, 0, width - frame),
-            Math.Clamp(position.Y, 0, height - frame));
+            Math.Clamp(position.X, -1, width - (frame - 1)),
+            Math.Clamp(position.Y, -1, height - (frame - 1)));
     }
 
     public void Draw(SpriteBatch spriteBatch, float ptimer)
